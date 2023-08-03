@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:root@localhost:3306/test_database"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+}
+
+model Repository {
+  id        Int      @id @default(autoincrement())
+  name      String
+  owner     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+}
+
+model PullRequest {
+  id Int @id @default(autoincrement())
+  userId Int?
+  repositoryId Int?
+  github_apiId Int? @unique
+  state State @relation(fields: [stateId], references: [id])
+  stateId Int
+  title String 
+  is_merged Boolean @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  @@index([userId, repositoryId])
+}
+
+model State {
+  id Int @id @default(autoincrement())
+  name String @unique
+  pullRequests PullRequest[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+}
+
