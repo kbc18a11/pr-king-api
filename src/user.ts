@@ -1,10 +1,9 @@
-import { Prisma, PrismaClient } from '@prisma/client'
 import { Router, Request } from 'express';
+import { prisma } from './index';
 
 const router = Router();
 
 router.get("", async (req, res) => {
-    const prisma = new PrismaClient({ log: ["query"] });
     const users = await prisma.user.findMany();
     return res.status(200).json({ users });
 });
@@ -16,7 +15,6 @@ interface CreateUserRequest extends Request {
 }
 
 router.post("", async (req: CreateUserRequest, res) => {
-    const prisma = new PrismaClient({ log: ["query"] });
     const user = await prisma.user.create({
         data: { name: req.body.name }
     });
@@ -33,7 +31,6 @@ interface UpdateUserRequest extends Request {
 }
 
 router.patch("/:id", async (req: UpdateUserRequest, res) => {
-    const prisma = new PrismaClient({ log: ["query"] });
     const user = await prisma.user.update({
         where: { id: req.params.id },
         data: { name: req.body.name }
@@ -52,8 +49,7 @@ interface DeleteUserRequest extends Request {
 }
 
 router.delete("/:id", async (req: DeleteUserRequest, res) => {
-    const prisma = new PrismaClient({ log: ["query"] });
-    const user = await prisma.user.delete({
+    await prisma.user.delete({
         where: { id: req.params.id },
     });
     return res.status(204);
